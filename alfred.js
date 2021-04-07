@@ -1,4 +1,6 @@
 const Discord = require('discord.js');
+const config = require('dotenv').config()
+
 const client = new Discord.Client();
 var userId = null;
 var chain = 0;
@@ -43,12 +45,12 @@ function userAskedReply(msg) {
         case 'alfred?': chain++;
         break;
         default: {
-            if(msg.content.toLowerCase().includes('are you')) msg.reply('I dont know. Are you?');
-            else if(msg.content.toLowerCase().includes('are u')) msg.reply('Am I?');
-            else if(msg.content.toLowerCase().includes('can you')) msg.reply('No. Can you?');
-            else if(msg.content.toLowerCase().includes('can u')) msg.reply('Sure...');
-            else if(msg.content.toLowerCase().includes('do you')) msg.reply('I dont know. Do YOU?');
-            else if(msg.content.toLowerCase().includes('do u')) msg.reply('NEVER');
+            if(msg.content.toLowerCase().startsWith('are you')) msg.reply('I dont know. Are you?');
+            else if(msg.content.toLowerCase().startsWith('are u')) msg.reply('Am I?');
+            else if(msg.content.toLowerCase().startsWith('can you')) msg.reply('No. Can you?');
+            else if(msg.content.toLowerCase().startsWith('can u')) msg.reply('Sure...');
+            else if(msg.content.toLowerCase().startsWith('do you')) msg.reply('I dont know. Do YOU?');
+            else if(msg.content.toLowerCase().startsWith('do u')) msg.reply('NEVER');
             else if(msg.content.toLowerCase().includes('you are')) msg.reply('LIES. NOTHING BUT LIES');
             else if(msg.content.toLowerCase().includes('u are')) msg.reply('no u');
             else if(msg.content.toLowerCase().includes('will')) msg.reply('Im a robot, not a fortune-teller.');
@@ -92,4 +94,4 @@ client.on('message', msg => {
     }
 });
 
-client.login('ODI4OTg4MDIzNzg5MTkxMjI5.YGxlQg.ABzNq0myYlbQ-ebwXpBlz8V2kg8');
+client.login(process.env.BOT_TOKEN);
