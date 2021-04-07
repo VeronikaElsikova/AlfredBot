@@ -150,7 +150,7 @@ function userActivatedChatbot_Replies(msg) {
             if(index < 4) {
                 msg.reply(alfredChainAnswers[index]);
             }
-            if(index > 4) {
+            if(index > 2) {
                 userId = null;
                 chain = 0;
             }
