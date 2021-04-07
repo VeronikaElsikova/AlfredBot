@@ -31,7 +31,8 @@ var messagesStartsWithAnswers = {
     'do u': 'NEVER',
     'i am': 'good for you.',
     'i’m': 'good for you.',
-    'im': 'good for you.'
+    'im': 'good for you.',
+    'what is': 'I’m not google...'
 };
 
 var messagesIncludesAnswers = {
