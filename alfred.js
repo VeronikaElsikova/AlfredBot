@@ -146,10 +146,11 @@ function userActivatedChatbot_Replies(msg) {
 
         /* pokud uživatel opakuje "Alfred?" po aktivaci chatbota */
         if(chain>1) {
-            if(chain-2 < chain.lenght) {
-                msg.reply(alfredChainAnswers[chain-2]);
+            var index = chain - 2;
+            if(index < 4) {
+                msg.reply(alfredChainAnswers[index]);
             }
-            if(chain > 4) {
+            if(index > 4) {
                 userId = null;
                 chain = 0;
             }
