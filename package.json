@@ -1,0 +1,24 @@
+{
+  "name": "Alfred",
+  "version": "1.0.0",
+  "description": "",
+  "main": "alfred.js",
+  "dependencies": {
+    "discord.js": "^12.5.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VeronikaElsikova/AlfredBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VeronikaElsikova/AlfredBot/issues"
+  },
+  "homepage": "https://github.com/VeronikaElsikova/AlfredBot#readme"
+}
