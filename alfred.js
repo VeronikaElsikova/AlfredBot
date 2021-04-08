@@ -87,10 +87,10 @@ var messagesIncludesAnswers = {
     "damn": "damn right",
     "hi": "hello.",
     "hello": "hi.",
-    "how is the weather?": "what do I know. Do I look like a weather girl?",
-    "i love you": "that\'s sweet. But you really should find some real friends...",
-    "i love u": "that\'s sweet. But you really need to work on your grammar...",
-    "i luv u": "I can\'t decide if it\'s really sweet or really stupid...",
+    "weather": "what do I know. Do I look like a weather girl?",
+    "love you": "that\'s sweet. But you really should find some real friends...",
+    "love u": "that\'s sweet. But you really need to work on your grammar...",
+    "luv u": "I can\'t decide if it\'s really sweet or really stupid...",
     "hop": "I\'m a robot. Not a rabbit...",
     "ping": "what am I a TCP/IP?",
     "...": "..."
@@ -236,24 +236,26 @@ function alfredChain(chain, msg) {
 function userActivatedChatbot_IndirectPhrases(msg) {
     let replied = false;
     /* triggery, které se nacházejí kdekoliv ve zprávě a mají pouze jednu odpověď */
-    for(var propt in messagesIncludesAnswers) {
-        if(msg.content.toLowerCase().includes(propt)) {
-            msg.reply(messagesIncludesAnswers[propt]);
-            replied = true;
-            break;
-        }
-    }
-    if(!replied) {
-        /* triggery, které se nacházejí kdekoliv ve zprávě a mají pouze jednu odpověď */
-        for(i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
-            for(j = 0; j < phrasesWithMultipleAnswers_Triggers[i].length; j++) {
-                if(msg.content.toLowerCase().includes(phrasesWithMultipleAnswers_Triggers[i][j])) {
-                    msg.reply(phrasesWithMultipleAnswers_Answers[i][getRandomInt(0, phrasesWithMultipleAnswers_Answers[i].length-1)]);
-                    replied = true;
-                }
+    for(i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
+        for(j = 0; j < phrasesWithMultipleAnswers_Triggers[i].length; j++) {
+            if(msg.content.toLowerCase().includes(phrasesWithMultipleAnswers_Triggers[i][j])) {
+                msg.reply(phrasesWithMultipleAnswers_Answers[i][getRandomInt(0, phrasesWithMultipleAnswers_Answers[i].length-1)]);
+                replied = true;
             }
         }
     }
+    
+    if(!replied) {
+        /* triggery, které se nacházejí kdekoliv ve zprávě a mají pouze jednu odpověď */
+        for(var propt in messagesIncludesAnswers) {
+            if(msg.content.toLowerCase().includes(propt)) {
+                msg.reply(messagesIncludesAnswers[propt]);
+                replied = true;
+                break;
+            }
+        }
+    }
+
     if(!replied) {
         /* triggery, která jsou na začátku zprávy */
         for(var propt in messagesStartsWithAnswers) {
