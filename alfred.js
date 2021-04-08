@@ -6,7 +6,7 @@ const userIdMaze = "619568015310192663";
 var userId = null;
 var chain = 0;
 
-var bannedWords = ["faggot", "negr", "nigga", "nigger", "carrot", ""]; // BANánek?
+var bannedWords = ["faggot", "negr", "nigga", "nigger", "carrot"]; // BANánek?
 
 /* (1:1) */
 var phrasesWithSimpleAnswers = {
@@ -148,7 +148,7 @@ client.on("ready", () => {
 
 client.on("message", msg => {
     /* zkontroje jestli lidi na serveru nejsou kreténi... */
-    checkIfMessageIsPC(msg);
+    if(checkIfMessageIsPC(msg)) return true;
 
     if(msg.author.id === userId) {
         /* uživatel aktivoval chatbota */
@@ -219,8 +219,10 @@ function checkIfMessageIsPC(msg) {
             msg.channel.send("<@" + userIdMaze + "> I require assistance. <@" + msg.author.id + "> is being a dickhead...");
             userId = null;
             chain = 0;
+            return true;
         }
     }
+    return false;
 }
 
 /* pokud uživatel opakuje "Alfred?" po aktivaci chatbota tak vezme příslušný string a pošle ho */
