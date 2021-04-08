@@ -85,8 +85,6 @@ var messagesIncludesAnswers = {
     "not": "why not?",
     "🙃": "no need to be sarcastic.",
     "damn": "damn right",
-    "hi": "hello.",
-    "hello": "hi.",
     "weather": "what do I know. Do I look like a weather girl?",
     "love you": "that\'s sweet. But you really should find some real friends...",
     "love u": "that\'s sweet. But you really need to work on your grammar...",
@@ -235,12 +233,13 @@ function alfredChain(chain, msg) {
 /* pro triggery, které použít něco jiného než === (equals)  */
 function userActivatedChatbot_IndirectPhrases(msg) {
     let replied = false;
-    /* triggery, které se nacházejí kdekoliv ve zprávě a mají pouze jednu odpověď */
+    /* triggery, kterých je více, nacházejí se kdekoliv a mají více odpověďí */
     for(i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
         for(j = 0; j < phrasesWithMultipleAnswers_Triggers[i].length; j++) {
             if(msg.content.toLowerCase().includes(phrasesWithMultipleAnswers_Triggers[i][j])) {
                 msg.reply(phrasesWithMultipleAnswers_Answers[i][getRandomInt(0, phrasesWithMultipleAnswers_Answers[i].length-1)]);
                 replied = true;
+                break;
             }
         }
     }
