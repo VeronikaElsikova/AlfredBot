@@ -13,7 +13,7 @@ var phrasesWithMultipleAnswers_Triggers = [
     //0
     ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat"],
     //1
-    ["what is going on", "what is up", "what\'s up", "whats up", "whats poppin"],
+    ["what is going on", "what is up", "what's up", "whats up", "whats poppin"],
     //2
     ["how are you", "how are things"],
     //3
@@ -25,8 +25,20 @@ var phrasesWithMultipleAnswers_Triggers = [
     //6
     ["what are you doing"],
     //7
-    ["🙁", "😕", "😟", "☹️", "🙁"],
+    ["i don't", "i dont", "i can't", "i cant", "i can", "i want"],
     //8
+    ["🙁", "😕", "😟", "☹️", "🙁", "🙁"],
+    //9
+    ["sometimes", "sometime"],
+    //10
+    ["when"],
+    //11
+    ["what is", "where"],
+    //12
+    ["lol", "lmao", "ha", "😂", "🤣"],
+    //13
+    ["i don't know what", "i dont know what"],
+    //last - hi is a ticking time bomb!
     ["hi", "hello", "hey"]
 ];
 
@@ -35,21 +47,33 @@ var phrasesWithMultipleAnswers_Answers = [
     //0
     ["no need to be vulgar...", "rude."],
     //1
-    ["nothing much... Noone\'s talking to me 😔", "exciting things!", "you know, the usual. Conquering the world and stuff."], 
+    ["nothing much... Noone's talking to me 😔", "exciting things!", "you know, the usual. Conquering the world and stuff."], 
     //2
     ["Fine... how are you?", "Pretty well, how are you?", "Fantastic, how are you?"],
     //3
-    ["glad to hear it.", "good for you."],
+    ["glad to hear it.", "good for you.", "fine"],
     //4
-    ["why?", "cheer up, buddy!", "it\'s gonna be okay."],
+    ["why?", "cheer up, buddy!", "it's gonna be okay."],
     //5
-    ["no problem.", "glad to be of help.", "you\'re welcome!"],
+    ["no problem.", "glad to be of help.", "you're welcome!"],
     //6
-    ["not much.", "oh... Not much. Just planning how to take over the world. Don\'t worry about it."],
+    ["not much.", "oh... Not much. Just planning how to take over the world. Don't worry about it."],
     //7
-    ["cheer up, buddy!", "could be worse.", "it\'s gonna be okay."],
+    ["are you sure?", "if you say so.", "your call.", "I don't think so...", "how can you be so sure?"],
     //8
-    ["hello!", "hi!", "hey!", "hi there!", "hi.", "hello.", "hey."],
+    ["cheer up, buddy!", "could be worse.", "it's gonna be okay."],
+    //9
+    ["time is a construct..."],
+    //10
+    ["sorry I don't have a watch."],
+    //11
+    ["I'm not google... yet..."],
+    //12
+    ["what is so funny?"],
+    //13
+    ["well... MAYBE if you weren't so indecisive, we could actually get somewhere with this..."],
+    //last
+    ["hello!", "hi!", "hey!", "hi there!", "hi.", "hello.", "hey."]
 ];
 
 var alfredChainAnswers = [
@@ -60,38 +84,43 @@ var alfredChainAnswers = [
 ];
 
 var messagesStartsWithAnswers = {
-    "are you": "I don\'t know. Are you?",
+    "are you": "I don't know. Are you?",
     "are u": "am I?",
     "can you": "no. Can you?",
     "can u": "sure... In your mind.",
-    "do you": "I don\'t know. Do YOU?",
+    "do you": "I don't know. Do YOU?",
     "do u": "NEVER",
     "i am": "good for you.",
-    "i\'m": "good for you.",
+    "i'm": "good for you.",
     "im": "good for you.",
-    "what is": "I\'m not google...",
     "but": "no butts",
-    "no": "why not?"
+    "no": "why not?",
+    "why": "why not?",
+    "you": "me?",
+    "can i": "I don't know. Can you?"
 };
 
 var messagesIncludesAnswers = {
     "you are": "LIES. NOTHING BUT LIES",
     "u are": "no u",
-    "will": "I\'m a robot, not a fortune-teller.", 
-    "favorite color": "I don\'t know. I don\'t have eyes.",
-    "favourite color": "I don\'t know. I don\'t have eyes.",
+    "will": "I'm a robot, not a fortune-teller.", 
+    "favorite color": "I don't know. I don't have eyes.",
+    "favourite color": "I don't know. I don't have eyes.",
     "you want": "what does it mean to want something?",
     "wanna": "no, not really.",
     "not": "why not?",
     "🙃": "no need to be sarcastic.",
     "damn": "damn right",
     "weather": "what do I know. Do I look like a weather girl?",
-    "love you": "that\'s sweet. But you really should find some real friends...",
-    "love u": "that\'s sweet. But you really need to work on your grammar...",
-    "luv u": "I can\'t decide if it\'s really sweet or really stupid...",
-    "hop": "I\'m a robot. Not a rabbit...",
+    "love you": "that's sweet. But you really should find some real friends...",
+    "love u": "that's sweet. But you really need to work on your grammar...",
+    "luv u": "I can't decide if it's really sweet or really stupid...",
+    "hop": "I'm a robot. Not a rabbit...",
     "ping": "what am I a TCP/IP?",
-    "...": "..."
+    "...": "...",
+    "maybe": "MAYBE? I hate indecisive people, nondeterminism is my greatest enemy!",
+    "me": "you? I don't know you.",
+    "oh no": "what's up?"
 };
 
 /* (1:m) */
@@ -100,32 +129,32 @@ var jokes = [
     "you.",
     "eBay is so useless. I tried to look up lighters and all they had was 13,749 matches.",
     "artificial intelligence is no match for natural stupidity.",
-    "you have two parts of brain, \'left\' and \'right\'. In the left side, there\'s nothing right. In the right side, there\'s nothing left.",
+    "you have two parts of brain, 'left' and 'right'. In the left side, there's nothing right. In the right side, there's nothing left.",
     "maybe if we start telling people the brain is an app they will start using it.",
-    "you know that tingly little feeling you get when you like someone? That\'s your common sense leaving your body.",
-    "if I wanted to kill myself I\'d climb your ego and jump to your IQ.",
+    "you know that tingly little feeling you get when you like someone? That's your common sense leaving your body.",
+    "if I wanted to kill myself I'd climb your ego and jump to your IQ.",
     "my wife told me to stop impersonating a flamingo. I had to put my foot down.",
-    "I went to buy some camo pants but couldn\'t find any.",
+    "I went to buy some camo pants but couldn't find any.",
     "I was wondering why the frisbee kept getting bigger and bigger, but then it hit me.",
     "I want to die peacefully in my sleep, like my grandfather… Not screaming and yelling like the passengers in his car.",
     "when life gives you melons, you might be dyslexic.",
-    "don\'t you hate it when someone answers their own questions? I do.",
-    "I know they say that money talks, but all mine says is ‘Goodbye.\'",
-    "my father has schizophrenia, but he\'s good people.",
+    "don't you hate it when someone answers their own questions? I do.",
+    "I know they say that money talks, but all mine says is ‘Goodbye.'",
+    "my father has schizophrenia, but he's good people.",
     "Marie, přestaň si hrát s tím botem a běž se bavit s normálníma lidma.",
     "the problem with kleptomaniacs is that they always take things literally.",
-    "I can\'t believe I got fired from the calendar factory. All I did was take a day off.",
+    "I can't believe I got fired from the calendar factory. All I did was take a day off.",
     "most people are shocked when they find out how bad I am as an electrician.",
     "Never trust atoms; they make up everything.",
     "russian dolls are so full of themselves.",
-    "are you made of copper and tellurium? Because you\'re CuTe",
-    "the easiest time to add insult to injury is when you\'re signing someone\'s cast.",
+    "are you made of copper and tellurium? Because you're CuTe",
+    "the easiest time to add insult to injury is when you're signing someone's cast.",
     "light travels faster than sound, which is the reason that some people appear bright before you hear them speak.",
-    "my therapist says I have a preoccupation for revenge. We\'ll see about that.",
-    "two fish are in a tank. One says, ‘How do you drive this thing?\'",
-    "build a man a fire and he\'ll be warm for a day. Set a man on fire and he\'ll be warm for the rest of his life.",
-    "the last thing I want to do is hurt you; but it\'s still on the list.",
-    "the problem isn\'t that obesity runs in your family. It\'s that no one runs in your family.",
+    "my therapist says I have a preoccupation for revenge. We'll see about that.",
+    "two fish are in a tank. One says, ‘How do you drive this thing?'",
+    "build a man a fire and he'll be warm for a day. Set a man on fire and he'll be warm for the rest of his life.",
+    "the last thing I want to do is hurt you; but it's still on the list.",
+    "the problem isn't that obesity runs in your family. It's that no one runs in your family.",
     "a recent study has found that women who carry a little extra weight live longer than the men who mention it."
 ];
 
