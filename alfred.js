@@ -30,7 +30,7 @@ var phrasesWithMultipleAnswers_Triggers = [
     //2
     ["how are you", "how are things"],
     //3
-    ["happy", "good", "well", "fantastic", "cool", "okay", "great", "better", "amazing", "lovely", "yes", "nice"],
+    ["happy", "good", "well", "fantastic", "cool", "okay", "great", "better", "amazing", "lovely", "yes", "nice", "super", "ok", "oki", "oke"],
     //4
     ["bad", "bored", "tired", "sad", "not good"],
     //5
@@ -217,8 +217,10 @@ function checkIfMessageIsPC(msg) {
     for(j = 0; j < bannedWords.length; j++) {
         if(msg.content.toLowerCase().includes(bannedWords[j])) {
             msg.channel.send("<@" + userIdMaze + "> I require assistance. <@" + msg.author.id + "> is being a dickhead...");
-            userId = null;
-            chain = 0;
+            if(msg.author===userId) {
+                userId = null;
+                chain = 0;
+            }
             return true;
         }
     }
@@ -242,19 +244,20 @@ function alfredChain(chain, msg) {
 /* pro triggery, které použít něco jiného než === (equals)  */
 function userActivatedChatbot_IndirectPhrases(msg) {
     let replied = false;
-    /* triggery, která jsou na začátku zprávy */
-    for(var propt in messagesStartsWithAnswers) {
-        if(msg.content.toLowerCase().startsWith(propt)) {
-            msg.reply(messagesStartsWithAnswers[propt]);
+    /* triggery, které se nacházejí kdekoliv ve zprávě a mají pouze jednu odpověď */
+    for(var propt in messagesIncludesAnswers) {
+        if(msg.content.toLowerCase().includes(propt)) {
+            msg.reply(messagesIncludesAnswers[propt]);
             replied = true;
             break;
         }
     }
+
     if(!replied) {
-        /* triggery, které se nacházejí kdekoliv ve zprávě a mají pouze jednu odpověď */
-        for(var propt in messagesIncludesAnswers) {
-            if(msg.content.toLowerCase().includes(propt)) {
-                msg.reply(messagesIncludesAnswers[propt]);
+        /* triggery, která jsou na začátku zprávy */
+        for(var propt in messagesStartsWithAnswers) {
+            if(msg.content.toLowerCase().startsWith(propt)) {
+                msg.reply(messagesStartsWithAnswers[propt]);
                 replied = true;
                 break;
             }
