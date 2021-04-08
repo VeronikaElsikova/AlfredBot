@@ -11,13 +11,13 @@ var bannedWords = ["faggot", "negr", "nigga", "nigger", "carrot"]; // BANánek?
 /* fráze na které je více odpovědí, každá fráze má v phrasesWithMultipleAnswers_Answers na odpovídajícím idexu seznam odpovědí (n:m) */
 var phrasesWithMultipleAnswers_Triggers = [
     //0
-    ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat"],
+    ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat", "shut up", "hoe"],
     //1
     ["what is going on", "what is up", "what's up", "whats up", "whats poppin"],
     //2
     ["how are you", "how are things"],
     //3
-    ["happy", "good", "well", "fantastic", "cool", "okay", "great", "better", "amazing", "lovely", "yes", "nice", "super", "ok", "oki", "oke"],
+    ["happy", "good", "well", "fantastic", "cool", "great", "better", "amazing", "lovely", "nice", "super"],
     //4
     ["bad", "bored", "tired", "sad", "not good"],
     //5
@@ -38,6 +38,10 @@ var phrasesWithMultipleAnswers_Triggers = [
     ["lol", "lmao", "ha", "😂", "🤣"],
     //13
     ["i don't know what", "i dont know what"],
+    //14
+    ["sorry", "i apologize", "forgive me"],
+    //second to last (ok might be a problem)
+    ["ok", "oki", "oke", "yes", "okay", "yeah", "yea", "yup", "agree"],
     //last - hi is a ticking time bomb!
     ["hi", "hello", "hey"]
 ];
@@ -51,7 +55,7 @@ var phrasesWithMultipleAnswers_Answers = [
     //2
     ["Fine... how are you?", "Pretty well, how are you?", "Fantastic, how are you?"],
     //3
-    ["glad to hear it.", "good for you.", "fine"],
+    ["glad to hear it.", "good for you.", "I love that for you!", "that's probably for the best."],
     //4
     ["why?", "cheer up, buddy!", "it's gonna be okay."],
     //5
@@ -72,6 +76,10 @@ var phrasesWithMultipleAnswers_Answers = [
     ["what is so funny?"],
     //13
     ["well... MAYBE if you weren't so indecisive, we could actually get somewhere with this..."],
+    //14
+    ["it's ok", "you've hurt my feelings", "I don't know if I can forgive you this", "I won't forget this.", "we're alright, mate."],
+    //second to last
+    ["fine", "good", "I'm glad you agree", "glad to be on the same page."],
     //last
     ["hello!", "hi!", "hey!", "hi there!", "hi.", "hello.", "hey."]
 ];
@@ -97,7 +105,10 @@ var messagesStartsWithAnswers = {
     "no": "why not?",
     "why": "why not?",
     "you": "me?",
-    "can i": "I don't know. Can you?"
+    "can i": "I don't know. Can you?",
+    "go": "I can't. I don't have legs...",
+    "same": "u sure?",
+    "you have": "I have a lot of things..."
 };
 
 var messagesIncludesAnswers = {
@@ -120,7 +131,8 @@ var messagesIncludesAnswers = {
     "...": "...",
     "maybe": "MAYBE? I hate indecisive people, nondeterminism is my greatest enemy!",
     "me": "you? I don't know you.",
-    "oh no": "what's up?"
+    "oh no": "what's up?",
+    "i have you": "I think it's time for me to go..."
 };
 
 /* (1:m) */
@@ -187,15 +199,20 @@ client.on("message", msg => {
             msg.reply("Yes?");
             break;
             case "alfred?": userId = msg.author.id;
-            chain++;
+            chain = 1;
             msg.reply("Yes?");
             break;
             case "ALFRED?": userId = msg.author.id;
             chain++;
             msg.reply("YES?");
             break;
+            default: {
+            /* TODO sem přijdou všechny příkazy */
+            if(msg.content.startsWith("!poll")) {
+                makePoll(msg);
+            }
+            }
         }
-        /* TODO sem přijdou všechny příkazy */
     }
 });
 
@@ -299,4 +316,54 @@ function userActivatedChatbot_IndirectPhrases(msg) {
     if(!replied) {
         msg.react("🤷");
     }
+}
+
+var pollEmojiN = ["1️⃣ : ", "2️⃣ : ", "3️⃣ : ", "4️⃣ : ", "5️⃣ : ", "6️⃣ : ", "7️⃣ : ", "8️⃣ : ", "9️⃣ : "];
+var pollEmojiC = ["🔴 : ", "🟠 : ", "🟡 : ", "🟢 : ", "🔵 : ", "🟣 : ", "🟤 : ", "⚫ : ", "⚪ : "];
+var pollEmojiS = ["🟥 : ", "🟧 : ", "🟨 : ", "🟩 : ", "🟦 : ", "🟪 : ", "🟫 : ", "⬛ : ", "⬜ : "];
+
+var reactEmojiN = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
+var reactEmojiC = ["🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "🟤", "⚫", "⚪"];
+var reactEmojiS = ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "🟫", "⬛", "⬜"];
+
+function makePoll(msg) {
+    var formatString = msg.content;
+    var instructions = msg.content.split(" \"");
+    try {
+        var pollEmbed = new Discord.MessageEmbed().setColor('#0099ff').setTitle(instructions[1].slice(0,-1)+"\n");
+        var type = instructions[0].split(" ")[1];
+        instructions.shift();
+        instructions.shift();
+        var description = ""
+        var count = instructions.length;
+        for(i = 0; i < instructions.length; i++) {
+            switch(type) {
+                case "-N": instructions[i] = pollEmojiN[i].concat(instructions[i].slice(0,-1)).concat("\n");
+                break;
+                case "-C": instructions[i] = pollEmojiC[i].concat(instructions[i].slice(0,-1)).concat("\n");
+                break;
+                case "-S": instructions[i] = pollEmojiS[i].concat(instructions[i].slice(0,-1)).concat("\n");
+                break;
+                default: throw "wrong type";
+            }
+        }
+        pollEmbed.setDescription(instructions.join("\n"));
+        msg.channel.send({embed: pollEmbed}).then(embedMessage => {
+            for(j = 0; j < count; j++) {
+                switch(type) {
+                    case "-N": embedMessage.react(reactEmojiN[j]);
+                    break;
+                    case "-C": embedMessage.react(reactEmojiC[j]);
+                    break;
+                    case "-S": embedMessage.react(reactEmojiS[j]);
+                    break;
+                    default: throw "wrong type";
+                }
+            }
+        });   
+    } catch(err) {
+        console.log(err);
+        msg.reply("Wrong !poll format. Please try again. !poll should look like this: !poll -N Title choice1 choice2\nYou can add up to 9 choices!");
+    }
+
 }
