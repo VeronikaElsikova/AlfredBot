@@ -24,7 +24,7 @@ var phrasesWithMultipleAnswers_Triggers = [
     //2
     ["how are you", "how are things"],
     //3
-    ["happy", "good", "well", "fantastic", "cool", "okay", "great", "better", "amazing", "lovely", "yes"],
+    ["happy", "good", "well", "fantastic", "cool", "okay", "great", "better", "amazing", "lovely", "yes", "nice"],
     //4
     ["bad", "bored", "tired", "sad", "not good", "🙁"],
     //5
