@@ -8,19 +8,6 @@ var chain = 0;
 
 var bannedWords = ["faggot", "negr", "nigga", "nigger", "carrot"]; // BANánek?
 
-/* (1:1) */
-var phrasesWithSimpleAnswers = {
-    "hi": "hello.",
-    "hello": "hi.",
-    "how is the weather?": "what do I know. Do I look like a weather girl?",
-    "i love you": "that\'s sweet. But you really should find some real friends...",
-    "i love u": "that\'s sweet. But you really need to work on your grammar...",
-    "i luv u": "I can\'t decide if it\'s really sweet or really stupid...",
-    "hop": "I\'m a robot. Not a rabbit...",
-    "ping": "what am I a TCP/IP?",
-    "...": "..."
-};
-
 /* fráze na které je více odpovědí, každá fráze má v phrasesWithMultipleAnswers_Answers na odpovídajícím idexu seznam odpovědí (n:m) */
 var phrasesWithMultipleAnswers_Triggers = [
     //0
@@ -97,7 +84,16 @@ var messagesIncludesAnswers = {
     "wanna": "no, not really.",
     "not": "why not?",
     "🙃": "no need to be sarcastic.",
-    "damn": "damn right"
+    "damn": "damn right",
+    "hi": "hello.",
+    "hello": "hi.",
+    "how is the weather?": "what do I know. Do I look like a weather girl?",
+    "i love you": "that\'s sweet. But you really should find some real friends...",
+    "i love u": "that\'s sweet. But you really need to work on your grammar...",
+    "i luv u": "I can\'t decide if it\'s really sweet or really stupid...",
+    "hop": "I\'m a robot. Not a rabbit...",
+    "ping": "what am I a TCP/IP?",
+    "...": "..."
 };
 
 /* (1:m) */
@@ -183,10 +179,6 @@ function userActivatedChatbot_Replies(msg) {
     /* pokud je zpráva VELKÝMI PÍSMENY */
     if(msg.content.toUpperCase() === msg.content && /[a-z]/i.test(msg.content)) {
         msg.reply("WHY ARE WE YELLING?!");
-    }
-    /* nejprve zkontroluje zda uživatel nenapsal frázi s jednoduchou odpovědí */
-    else if(phrasesWithSimpleAnswers.hasOwnProperty(msg.content.toLowerCase())) {
-        msg.reply(phrasesWithSimpleAnswers[msg.content.toLowerCase()]);
     }
     // pokud odpověď není v seznamu frází s jednoduchými odvěďmi
     else { 
