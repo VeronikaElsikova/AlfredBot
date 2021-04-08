@@ -180,7 +180,6 @@ function userActivatedChatbot_Replies(msg) {
     if(msg.content.toUpperCase() === msg.content && /[a-z]/i.test(msg.content)) {
         msg.reply("WHY ARE WE YELLING?!");
     }
-    // pokud odpověď není v seznamu frází s jednoduchými odvěďmi
     else { 
         switch(msg.content.toLowerCase()) {
             case "tell me a joke":
@@ -244,17 +243,6 @@ function userActivatedChatbot_IndirectPhrases(msg) {
             break;
         }
     }
-
-    if(!replied) {
-        /* triggery, která jsou na začátku zprávy */
-        for(var propt in messagesStartsWithAnswers) {
-            if(msg.content.toLowerCase().startsWith(propt)) {
-                msg.reply(messagesStartsWithAnswers[propt]);
-                replied = true;
-                break;
-            }
-        }
-    }
     if(!replied) {
         /* triggery, které se nacházejí kdekoliv ve zprávě a mají pouze jednu odpověď */
         for(i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
@@ -266,6 +254,17 @@ function userActivatedChatbot_IndirectPhrases(msg) {
             }
         }
     }
+    if(!replied) {
+        /* triggery, která jsou na začátku zprávy */
+        for(var propt in messagesStartsWithAnswers) {
+            if(msg.content.toLowerCase().startsWith(propt)) {
+                msg.reply(messagesStartsWithAnswers[propt]);
+                replied = true;
+                break;
+            }
+        }
+    }
+   
     if(!replied) {
         msg.react("🤷");
     }
