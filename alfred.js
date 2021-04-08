@@ -11,7 +11,7 @@ var bannedWords = ["faggot", "negr", "nigga", "nigger", "carrot"]; // BANánek?
 /* fráze na které je více odpovědí, každá fráze má v phrasesWithMultipleAnswers_Answers na odpovídajícím idexu seznam odpovědí (n:m) */
 var phrasesWithMultipleAnswers_Triggers = [
     //0
-    ["hi", "hello", "hey"],
+    ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat"],
     //1
     ["what is going on", "what is up", "what\'s up", "whats up", "whats poppin"],
     //2
@@ -27,13 +27,13 @@ var phrasesWithMultipleAnswers_Triggers = [
     //7
     ["🙁", "😕", "😟", "☹️", "🙁"],
     //8
-    ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat"],
+    ["hi", "hello", "hey"]
 ];
 
 /* odpovědi k triggerům */
 var phrasesWithMultipleAnswers_Answers = [
     //0
-    ["hello!", "hi!", "hey!", "hi there!", "hi.", "hello.", "hey."],
+    ["no need to be vulgar...", "rude."],
     //1
     ["nothing much... Noone\'s talking to me 😔", "exciting things!", "you know, the usual. Conquering the world and stuff."], 
     //2
@@ -49,7 +49,7 @@ var phrasesWithMultipleAnswers_Answers = [
     //7
     ["cheer up, buddy!", "could be worse.", "it\'s gonna be okay."],
     //8
-    ["no need to be vulgar...", "rude."],
+    ["hello!", "hi!", "hey!", "hi there!", "hi.", "hello.", "hey."],
 ];
 
 var alfredChainAnswers = [
@@ -242,6 +242,7 @@ function userActivatedChatbot_IndirectPhrases(msg) {
                 break;
             }
         }
+        if(replied) break;
     }
     
     if(!replied) {
