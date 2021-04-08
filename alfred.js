@@ -2,9 +2,13 @@ const Discord = require("discord.js");
 const config = require("dotenv").config()
 
 const client = new Discord.Client();
+const userIdMaze = "619568015310192663";
 var userId = null;
 var chain = 0;
 
+var bannedWords = ["faggot", "negr", "nigga", "nigger", "carrot", ""]; // BANánek?
+
+/* (1:1) */
 var phrasesWithSimpleAnswers = {
     "hi": "hello.",
     "hello": "hi.",
@@ -12,10 +16,12 @@ var phrasesWithSimpleAnswers = {
     "i love you": "that\'s sweet. But you really should find some real friends...",
     "i love u": "that\'s sweet. But you really need to work on your grammar...",
     "i luv u": "I can\'t decide if it\'s really sweet or really stupid...",
-    "hop": "I\'m a robot. Not a rabbit..."
+    "hop": "I\'m a robot. Not a rabbit...",
+    "ping": "what am I a TCP/IP?",
+    "...": "..."
 };
 
-/* fráze na které je více odpovědí, každá fráze má v phrasesWithMultipleAnswers_Answers na odpovídajícím idexu seznam odpovědí */
+/* fráze na které je více odpovědí, každá fráze má v phrasesWithMultipleAnswers_Answers na odpovídajícím idexu seznam odpovědí (n:m) */
 var phrasesWithMultipleAnswers_Triggers = [
     //0
     ["hi", "hello", "hey"],
@@ -26,11 +32,15 @@ var phrasesWithMultipleAnswers_Triggers = [
     //3
     ["happy", "good", "well", "fantastic", "cool", "okay", "great", "better", "amazing", "lovely", "yes", "nice"],
     //4
-    ["bad", "bored", "tired", "sad", "not good", "🙁"],
+    ["bad", "bored", "tired", "sad", "not good"],
     //5
     ["thanks", "thank you", "good job"],
     //6
-    ["what are you doing"]
+    ["what are you doing"],
+    //7
+    ["🙁", "😕", "😟", "☹️", "🙁"],
+    //8
+    ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat"],
 ];
 
 /* odpovědi k triggerům */
@@ -44,11 +54,15 @@ var phrasesWithMultipleAnswers_Answers = [
     //3
     ["glad to hear it.", "good for you."],
     //4
-    ["why?", "cheer up, buddy!"],
+    ["why?", "cheer up, buddy!", "it\'s gonna be okay."],
     //5
     ["no problem.", "glad to be of help.", "you\'re welcome!"],
     //6
-    ["not much.", "oh... Not much. Just planning how to take over the world. Don\'t worry about it."]
+    ["not much.", "oh... Not much. Just planning how to take over the world. Don\'t worry about it."],
+    //7
+    ["cheer up, buddy!", "could be worse.", "it\'s gonna be okay."],
+    //8
+    ["no need to be vulgar...", "rude."],
 ];
 
 var alfredChainAnswers = [
@@ -81,9 +95,12 @@ var messagesIncludesAnswers = {
     "favourite color": "I don\'t know. I don\'t have eyes.",
     "you want": "what does it mean to want something?",
     "wanna": "no, not really.",
-    "not": "why not?"
+    "not": "why not?",
+    "🙃": "no need to be sarcastic.",
+    "damn": "damn right"
 };
 
+/* (1:m) */
 var jokes = [
     "1 + 1 = 11",
     "you.",
@@ -130,6 +147,9 @@ client.on("ready", () => {
 });
 
 client.on("message", msg => {
+    /* zkontroje jestli lidi na serveru nejsou kreténi... */
+    checkIfMessageIsPC(msg);
+
     if(msg.author.id === userId) {
         /* uživatel aktivoval chatbota */
         userActivatedChatbot_Replies(msg);
@@ -192,6 +212,17 @@ function userActivatedChatbot_Replies(msg) {
     }
 }
 
+/* zkontroluje, že se nepoužívají "zakázaná" slova */
+function checkIfMessageIsPC(msg) {
+    for(j = 0; j < bannedWords.length; j++) {
+        if(msg.content.toLowerCase().includes(bannedWords[j])) {
+            msg.channel.send("<@" + userIdMaze + "> I require assistance. <@" + msg.author.id + "> is being a dickhead...");
+            userId = null;
+            chain = 0;
+        }
+    }
+}
+
 /* pokud uživatel opakuje "Alfred?" po aktivaci chatbota tak vezme příslušný string a pošle ho */
 function alfredChain(chain, msg) {
     if(chain>1) {
@@ -232,9 +263,9 @@ function userActivatedChatbot_IndirectPhrases(msg) {
         for(i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
             for(j = 0; j < phrasesWithMultipleAnswers_Triggers[i].length; j++) {
                 if(msg.content.toLowerCase().includes(phrasesWithMultipleAnswers_Triggers[i][j])) {
-                        msg.reply(phrasesWithMultipleAnswers_Answers[i][getRandomInt(0, phrasesWithMultipleAnswers_Answers[i].length-1)]);
-                        replied = true;
-                    }
+                    msg.reply(phrasesWithMultipleAnswers_Answers[i][getRandomInt(0, phrasesWithMultipleAnswers_Answers[i].length-1)]);
+                    replied = true;
+                }
             }
         }
     }
