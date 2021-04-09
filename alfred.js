@@ -104,7 +104,7 @@ var chainSwearwordsAnswers = [
     ["no need to be vulgar...", "rude."],
     ["why are you so rude?", "being mean is not a solution."],
     ["who hurt you?", "...", "do you need a hug?"],
-    ["well... I don't have to listen to this.", "I done.", "that's enough."]
+    ["well... I don't have to listen to this.", "I'm done.", "that's enough."]
 ];
 
 var messagesStartsWithAnswers = {
@@ -242,6 +242,7 @@ function userActivatedChatbot_Replies(msg) {
         msg.reply("WHY ARE WE YELLING?!");
     }
     else { 
+        resetChatBot(); //TODO reakce na více uživatelů zároveň
         switch(msg.content.toLowerCase()) {
             case "tell me a joke":
             // TODO upravit, aby čekal na odpověď
