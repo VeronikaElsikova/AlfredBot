@@ -206,6 +206,7 @@ client.on("message", msg => {
         if(pause>0) chatBotPausedCheck(msg);
         else userActivatedChatbot_Replies(msg);
     } else {
+        resetChatBot(); //TODO reakce na více uživatelů zároveň
         /* reakce na všechny zprávy, bez předchozího vyvolání */
         switch(msg.content) {
             case "ping": if(Math.random() >= 0.5) msg.reply("pong");
@@ -242,7 +243,6 @@ function userActivatedChatbot_Replies(msg) {
         msg.reply("WHY ARE WE YELLING?!");
     }
     else { 
-        resetChatBot(); //TODO reakce na více uživatelů zároveň
         switch(msg.content.toLowerCase()) {
             case "tell me a joke":
             // TODO upravit, aby čekal na odpověď
