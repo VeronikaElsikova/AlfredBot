@@ -6,13 +6,17 @@ const userIdMaze = "619568015310192663";
 const channelIsLogs = "830014187550933022";
 var userId = null;
 var chainAlfred = 0;
+var chainSwearwords = 0;
+var pause = 0; //codes: 1-swearwords, 2-i have you
+var waitForReply = 0; //code: 1:joke
+var jokeReplyCode = 0
 
 var bannedWords = ["faggot", "negr", "nigga", "nigger", "carrot"]; // BANánek?
 
 /* fráze na které je více odpovědí, každá fráze má v phrasesWithMultipleAnswers_Answers na odpovídajícím idexu seznam odpovědí (n:m) */
 var phrasesWithMultipleAnswers_Triggers = [
     //0
-    ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat", "shut up", "hoe"],
+    ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat", "shut up", "hoe", "idiot"],
     //1
     ["what is going on", "what is up", "what's up", "whats up", "whats poppin"],
     //2
@@ -22,7 +26,7 @@ var phrasesWithMultipleAnswers_Triggers = [
     //4
     ["bad", "bored", "tired", "sad", "not good"],
     //5
-    ["thanks", "thank you", "good job"],
+    ["thanks", "thank you"],
     //6
     ["what are you doing"],
     //7
@@ -36,21 +40,23 @@ var phrasesWithMultipleAnswers_Triggers = [
     //11
     ["what is", "where"],
     //12
-    ["lol", "lmao", "ha", "😂", "🤣"],
+    ["lol", "lmao", "😂", "🤣"],
     //13
     ["i don't know what", "i dont know what"],
     //14
     ["sorry", "i apologize", "forgive me"],
+    //15
+    ["good job", "well done"],
     //second to last (ok might be a problem)
     ["ok", "oki", "oke", "yes", "okay", "yeah", "yea", "yup", "agree"],
     //last - hi is a ticking time bomb!
-    ["hi", "hello", "hey"]
+    ["hi", "hello", "hey", "good morning", "good evening", "good afternoon"]
 ];
 
 /* odpovědi k triggerům */
 var phrasesWithMultipleAnswers_Answers = [
-    //0
-    ["no need to be vulgar...", "rude."],
+    //0 samostatné odpovědi
+    [],
     //1
     ["nothing much... Noone's talking to me 😔", "exciting things!", "you know, the usual. Conquering the world and stuff."], 
     //2
@@ -58,7 +64,7 @@ var phrasesWithMultipleAnswers_Answers = [
     //3
     ["glad to hear it.", "good for you.", "I love that for you!", "that's probably for the best."],
     //4
-    ["why?", "cheer up, buddy!", "it's gonna be okay."],
+    ["why?", "cheer up, buddy!", "it's gonna be okay.", "Cheer up, buttercup.", "No storm lasts forever.", "Stay positive!"],
     //5
     ["no problem.", "glad to be of help.", "you're welcome!"],
     //6
@@ -79,6 +85,8 @@ var phrasesWithMultipleAnswers_Answers = [
     ["well... MAYBE if you weren't so indecisive, we could actually get somewhere with this..."],
     //14
     ["it's ok", "you've hurt my feelings", "I don't know if I can forgive you this", "I won't forget this.", "we're alright, mate."],
+    //15
+    ["glad to be of help.", "thank you", "thanks", "good to hear"],
     //second to last
     ["fine", "good", "I'm glad you agree", "glad to be on the same page.", "good for you."],
     //last
@@ -90,6 +98,13 @@ var chainAlfredAnswers = [
     "what do you want?",
     "yes? What can I DO for you?",
     "STOP WASTING MY TIME. WHY ARE YOU STILL TALKING TO ME?! GO MAKE SOME REAL FRIENDS!"
+];
+
+var chainSwearwordsAnswers = [
+    ["no need to be vulgar...", "rude."],
+    ["why are you so rude?", "being mean is not a solution."],
+    ["who hurt you?", "...", "do you need a hug?"],
+    ["well... I don't have to listen to this.", "I done.", "that's enough."]
 ];
 
 var messagesStartsWithAnswers = {
@@ -188,7 +203,8 @@ client.on("message", msg => {
 
     if(msg.author.id === userId) {
         /* uživatel aktivoval chatbota */
-        userActivatedChatbot_Replies(msg);
+        if(pause>0) chatBotPausedCheck(msg);
+        else userActivatedChatbot_Replies(msg);
     } else {
         /* reakce na všechny zprávy, bez předchozího vyvolání */
         switch(msg.content) {
@@ -233,8 +249,7 @@ function userActivatedChatbot_Replies(msg) {
             else msg.reply(jokes[getRandomInt(0, jokes.length-1)]);
             break;
             case "goodbye": msg.reply("farewell. Have a nice day.");
-            userId = null;
-            chainAlfred = 0;
+            resetChatBot();
             break;
             case "alfred?": chainAlfred++;
             // pokud uživatel opakuje "Alfred?" po aktivaci chatbota
@@ -248,18 +263,26 @@ function userActivatedChatbot_Replies(msg) {
     }
 }
 
+function resetChatBot() {
+    userId = null;
+    chainAlfred = 0;
+    chainSwearwords = 0;
+    pause = 0;
+    waitForReply = 0;
+    jokeReplyCode = 0
+}
+
 /* zkontroluje, že se nepoužívají "zakázaná" slova */
 function checkIfMessageIsPC(msg) {
     if(msg.channel.id===channelIsLogs) return false;
     for(j = 0; j < bannedWords.length; j++) {
         if(msg.content.toLowerCase().includes(bannedWords[j])) {
             client.channels.cache.get(channelIsLogs).send("<@" + msg.author.id + "> send a message to channel \"" + msg.channel.name + "\": \"" + msg.content + "\"");
-            msg.reply("Your message has been deleted, because it contains one or multiple words that are banned on this server.");
+            msg.reply("your message has been deleted, because it contains one or multiple words that are banned on this server.");
             msg.delete();
             msg.channel.send("<@" + userIdMaze + ">, I require assistance. <@" + msg.author.id + "> is being a dickhead...");
             if(msg.author===userId) {
-                userId = null;
-                chainAlfred = 0;
+                resetChatBot();
             }
             return true;
         }
@@ -267,16 +290,41 @@ function checkIfMessageIsPC(msg) {
     return false;
 }
 
+function chatBotPausedCheck(msg) {
+    var text = msg.content.toLowerCase();
+    switch(pause) {
+        case 1:
+            if(text.includes("sorry") && !text.includes("not sorry") || text.includes("i apologize")) {
+                pause = 0;
+                msg.reply("I forgive you.");
+            }
+            break;
+        default: console.log("You fucked up.");
+    }
+}
+
 /* pokud uživatel opakuje "Alfred?" po aktivaci chatbota tak vezme příslušný string a pošle ho */
 function chainAlfredCheck(msg) {
-    if(chainAlfred>1) {
+    if(chainAlfred > 1) {
         let index = chainAlfred - 2;
         if(index < chainAlfredAnswers.length) {
             msg.reply(chainAlfredAnswers[index]);
         }
         if(chainAlfred > chainAlfredAnswers.length) {
-            userId = null;
-            chainAlfred = 0;
+            resetChatBot();
+        }
+    }
+}
+
+/* pokud uživatel píše nadávky po aktivaci chatbota */
+function chainSwearwordsCheck(msg) {
+    if(chainSwearwords > 0) {
+        let index = chainSwearwords - 1;
+        if(index < chainSwearwordsAnswers.length) {
+            msg.reply(chainSwearwordsAnswers[index][getRandomInt(0, chainSwearwordsAnswers[index].length-1)]);
+        }
+        if(index > chainSwearwordsAnswers.length-2) {
+            pause = 1;
         }
     }
 }
@@ -288,7 +336,12 @@ function userActivatedChatbot_IndirectPhrases(msg) {
     for(i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
         for(j = 0; j < phrasesWithMultipleAnswers_Triggers[i].length; j++) {
             if(msg.content.toLowerCase().includes(phrasesWithMultipleAnswers_Triggers[i][j])) {
-                msg.reply(phrasesWithMultipleAnswers_Answers[i][getRandomInt(0, phrasesWithMultipleAnswers_Answers[i].length-1)]);
+                if(i===0) {
+                    chainSwearwords++;
+                    chainSwearwordsCheck(msg);
+                } else {
+                    msg.reply(phrasesWithMultipleAnswers_Answers[i][getRandomInt(0, phrasesWithMultipleAnswers_Answers[i].length-1)]);
+                }
                 replied = true;
                 break;
             }
