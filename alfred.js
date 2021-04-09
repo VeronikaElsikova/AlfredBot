@@ -3,8 +3,9 @@ const config = require("dotenv").config()
 
 const client = new Discord.Client();
 const userIdMaze = "619568015310192663";
+const channelIsLogs = "830014187550933022";
 var userId = null;
-var chain = 0;
+var chainAlfred = 0;
 
 var bannedWords = ["faggot", "negr", "nigga", "nigger", "carrot"]; // BANánek?
 
@@ -17,7 +18,7 @@ var phrasesWithMultipleAnswers_Triggers = [
     //2
     ["how are you", "how are things"],
     //3
-    ["happy", "good", "well", "fantastic", "cool", "great", "better", "amazing", "lovely", "nice", "super"],
+    ["happy", "good", "well", "fantastic", "cool", "great", "better", "amazing", "lovely", "nice", "super", "fine"],
     //4
     ["bad", "bored", "tired", "sad", "not good"],
     //5
@@ -79,12 +80,12 @@ var phrasesWithMultipleAnswers_Answers = [
     //14
     ["it's ok", "you've hurt my feelings", "I don't know if I can forgive you this", "I won't forget this.", "we're alright, mate."],
     //second to last
-    ["fine", "good", "I'm glad you agree", "glad to be on the same page."],
+    ["fine", "good", "I'm glad you agree", "glad to be on the same page.", "good for you."],
     //last
     ["hello!", "hi!", "hey!", "hi there!", "hi.", "hello.", "hey."]
 ];
 
-var alfredChainAnswers = [
+var chainAlfredAnswers = [
     "what?",
     "what do you want?",
     "yes? What can I DO for you?",
@@ -195,15 +196,15 @@ client.on("message", msg => {
             else msg.reply("no");
             break;
             case "Alfred?": userId = msg.author.id;
-            chain++;
+            chainAlfred++;
             msg.reply("Yes?");
             break;
             case "alfred?": userId = msg.author.id;
-            chain = 1;
+            chainAlfred = 1;
             msg.reply("Yes?");
             break;
             case "ALFRED?": userId = msg.author.id;
-            chain++;
+            chainAlfred++;
             msg.reply("YES?");
             break;
             default: {
@@ -228,16 +229,16 @@ function userActivatedChatbot_Replies(msg) {
         switch(msg.content.toLowerCase()) {
             case "tell me a joke":
             // TODO upravit, aby čekal na odpověď
-            if(chain > 3) msg.reply("\nJack: Why was the robot angry?\nBen: Beats me.\nJack: Because someone kept pushing his buttons!");
+            if(chainAlfred > 3) msg.reply("\nJack: Why was the robot angry?\nBen: Beats me.\nJack: Because someone kept pushing his buttons!");
             else msg.reply(jokes[getRandomInt(0, jokes.length-1)]);
             break;
             case "goodbye": msg.reply("farewell. Have a nice day.");
             userId = null;
-            chain = 0;
+            chainAlfred = 0;
             break;
-            case "alfred?": chain++;
+            case "alfred?": chainAlfred++;
             // pokud uživatel opakuje "Alfred?" po aktivaci chatbota
-            alfredChain(chain, msg);
+            chainAlfredCheck(msg);
             break;
             default: {
                 /* pokud je třeba na obsah zprávy použít něco jiného než === (equals) */
@@ -249,12 +250,16 @@ function userActivatedChatbot_Replies(msg) {
 
 /* zkontroluje, že se nepoužívají "zakázaná" slova */
 function checkIfMessageIsPC(msg) {
+    if(msg.channel.id===channelIsLogs) return false;
     for(j = 0; j < bannedWords.length; j++) {
         if(msg.content.toLowerCase().includes(bannedWords[j])) {
-            msg.channel.send("<@" + userIdMaze + "> I require assistance. <@" + msg.author.id + "> is being a dickhead...");
+            client.channels.cache.get(channelIsLogs).send("<@" + msg.author.id + "> send a message to channel \"" + msg.channel.name + "\": \"" + msg.content + "\"");
+            msg.reply("Your message has been deleted, because it contains one or multiple words that are banned on this server.");
+            msg.delete();
+            msg.channel.send("<@" + userIdMaze + ">, I require assistance. <@" + msg.author.id + "> is being a dickhead...");
             if(msg.author===userId) {
                 userId = null;
-                chain = 0;
+                chainAlfred = 0;
             }
             return true;
         }
@@ -263,15 +268,15 @@ function checkIfMessageIsPC(msg) {
 }
 
 /* pokud uživatel opakuje "Alfred?" po aktivaci chatbota tak vezme příslušný string a pošle ho */
-function alfredChain(chain, msg) {
-    if(chain>1) {
-        let index = chain - 2;
-        if(index < alfredChainAnswers.length) {
-            msg.reply(alfredChainAnswers[index]);
+function chainAlfredCheck(msg) {
+    if(chainAlfred>1) {
+        let index = chainAlfred - 2;
+        if(index < chainAlfredAnswers.length) {
+            msg.reply(chainAlfredAnswers[index]);
         }
-        if(chain > alfredChainAnswers.length) {
+        if(chainAlfred > chainAlfredAnswers.length) {
             userId = null;
-            chain = 0;
+            chainAlfred = 0;
         }
     }
 }
@@ -318,13 +323,10 @@ function userActivatedChatbot_IndirectPhrases(msg) {
     }
 }
 
-var pollEmojiN = ["1️⃣ : ", "2️⃣ : ", "3️⃣ : ", "4️⃣ : ", "5️⃣ : ", "6️⃣ : ", "7️⃣ : ", "8️⃣ : ", "9️⃣ : "];
-var pollEmojiC = ["🔴 : ", "🟠 : ", "🟡 : ", "🟢 : ", "🔵 : ", "🟣 : ", "🟤 : ", "⚫ : ", "⚪ : "];
-var pollEmojiS = ["🟥 : ", "🟧 : ", "🟨 : ", "🟩 : ", "🟦 : ", "🟪 : ", "🟫 : ", "⬛ : ", "⬜ : "];
-
 var reactEmojiN = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
 var reactEmojiC = ["🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "🟤", "⚫", "⚪"];
 var reactEmojiS = ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "🟫", "⬛", "⬜"];
+var separator = " : ";
 
 function makePoll(msg) {
     var formatString = msg.content;
@@ -338,11 +340,11 @@ function makePoll(msg) {
         var count = instructions.length;
         for(i = 0; i < instructions.length; i++) {
             switch(type) {
-                case "-N": instructions[i] = pollEmojiN[i].concat(instructions[i].slice(0,-1)).concat("\n");
+                case "-N": instructions[i] = reactEmojiN[i] + separator + instructions[i].slice(0,-1) + "\n";
                 break;
-                case "-C": instructions[i] = pollEmojiC[i].concat(instructions[i].slice(0,-1)).concat("\n");
+                case "-C": instructions[i] = reactEmojiC[i] + separator + instructions[i].slice(0,-1) + "\n";
                 break;
-                case "-S": instructions[i] = pollEmojiS[i].concat(instructions[i].slice(0,-1)).concat("\n");
+                case "-S": instructions[i] = reactEmojiS[i] + separator + instructions[i].slice(0,-1) + "\n";
                 break;
                 default: throw "wrong type";
             }
@@ -363,7 +365,8 @@ function makePoll(msg) {
         });   
     } catch(err) {
         console.log(err);
-        msg.reply("Wrong !poll format. Please try again. !poll should look like this: !poll -N Title choice1 choice2\nYou can add up to 9 choices!");
+        if(err==="wrong type") msg.reply("This !poll flag is not supported.");
+        else msg.reply("Wrong !poll format. Please try again. !poll should look like this: !poll -N Title choice1 choice2\nYou can add up to 9 choices!");
     }
 
 }
