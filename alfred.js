@@ -206,22 +206,18 @@ client.on("message", msg => {
         if(pause>0) chatBotPausedCheck(msg);
         else userActivatedChatbot_Replies(msg);
     } else {
-        resetChatBot(); //TODO reakce na více uživatelů zároveň
         /* reakce na všechny zprávy, bez předchozího vyvolání */
         switch(msg.content) {
             case "ping": if(Math.random() >= 0.5) msg.reply("pong");
             else msg.reply("no");
             break;
-            case "Alfred?": userId = msg.author.id;
-            chainAlfred++;
+            case "Alfred?": initializeChatbot(msg)
             msg.reply("Yes?");
             break;
-            case "alfred?": userId = msg.author.id;
-            chainAlfred = 1;
+            case "alfred?": initializeChatbot(msg)
             msg.reply("Yes?");
             break;
-            case "ALFRED?": userId = msg.author.id;
-            chainAlfred++;
+            case "ALFRED?": initializeChatbot(msg)
             msg.reply("YES?");
             break;
             default: {
@@ -235,6 +231,12 @@ client.on("message", msg => {
 });
 
 client.login(process.env.BOT_TOKEN);
+
+function initializeChatbot(msg) {
+    resetChatBot(); //TODO reakce na více uživatelů zároveň
+    userId = msg.author.id;
+    chainAlfred = 1;
+}
 
 /* funkce, která se volá pokud uživatel aktivoval chatbota (napsání "Alfred?") */
 function userActivatedChatbot_Replies(msg) {
