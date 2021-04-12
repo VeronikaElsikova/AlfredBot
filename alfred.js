@@ -4,6 +4,7 @@ const config = require("dotenv").config()
 const client = new Discord.Client();
 const userIdMaze = "619568015310192663";
 const channelIsLogs = "830014187550933022";
+var botOn = true;
 var userId = null;
 var chainAlfred = 0;
 var chainSwearwords = 0;
@@ -16,13 +17,13 @@ var bannedWords = ["faggot", "negr", "nigga", "nigger", "carrot"]; // BANánek?
 /* fráze na které je více odpovědí, každá fráze má v phrasesWithMultipleAnswers_Answers na odpovídajícím idexu seznam odpovědí (n:m) */
 var phrasesWithMultipleAnswers_Triggers = [
     //0
-    ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat", "shut up", "hoe", "idiot"],
+    ["fuck", "shit", "asshole", "cum", "cock", "bitch", "dick", "bastard", "cunt", "wanker", "twat", "shut up", "hoe", "idiot", "slut"],
     //1
     ["what is going on", "what is up", "what's up", "whats up", "whats poppin"],
     //2
     ["how are you", "how are things"],
     //3
-    ["happy", "good", "well", "fantastic", "cool", "great", "better", "amazing", "lovely", "nice", "super", "fine"],
+    ["happy", "good", "well", "fantastic", "cool", "great", "amazing", "lovely", "nice", "super", "fine"],
     //4
     ["bad", "bored", "tired", "sad", "not good"],
     //5
@@ -47,6 +48,8 @@ var phrasesWithMultipleAnswers_Triggers = [
     ["sorry", "i apologize", "forgive me"],
     //15
     ["good job", "well done"],
+    //16
+    ["favorite show", "favourite show", "favorite tv show", "favourite tv show", "favorite series", "favourite series"],
     //second to last (ok might be a problem)
     ["ok", "oki", "oke", "yes", "okay", "yeah", "yea", "yup", "agree"],
     //last - hi is a ticking time bomb!
@@ -87,6 +90,8 @@ var phrasesWithMultipleAnswers_Answers = [
     ["it's ok", "you've hurt my feelings", "I don't know if I can forgive you this", "I won't forget this.", "we're alright, mate."],
     //15
     ["glad to be of help.", "thank you", "thanks", "good to hear"],
+    //16
+    ["Black Mirror 😉"],
     //second to last
     ["fine", "good", "I'm glad you agree", "glad to be on the same page.", "good for you."],
     //last
@@ -108,31 +113,31 @@ var chainSwearwordsAnswers = [
 ];
 
 var messagesStartsWithAnswers = {
-    "are you": "I don't know. Are you?",
-    "are u": "am I?",
-    "can you": "no. Can you?",
-    "can u": "sure... In your mind.",
-    "do you": "I don't know. Do YOU?",
-    "do u": "NEVER",
-    "i am": "good for you.",
-    "i'm": "good for you.",
-    "im": "good for you.",
+    "are you ": "I don't know. Are you?",
+    "are u ": "am I?",
+    "can you ": "no. Can you?",
+    "can u ": "sure... In your mind.",
+    "do you ": "I don't know. Do YOU?",
+    "do u ": "NEVER",
+    "i am ": "well, good for you.",
+    "i'm ": "good for you.",
+    "im ": "good for you.",
     "but": "no butts",
     "no": "why not?",
     "why": "why not?",
     "you": "me?",
-    "can i": "I don't know. Can you?",
-    "go": "I can't. I don't have legs...",
+    "can i ": "I don't know. Can you?",
+    "go ": "I can't. I don't have legs...",
     "same": "u sure?",
-    "you have": "I have a lot of things..."
+    "you have ": "I have a lot of things..."
 };
 
 var messagesIncludesAnswers = {
     "you are": "LIES. NOTHING BUT LIES",
     "u are": "no u",
-    "will": "I'm a robot, not a fortune-teller.", 
-    "favorite color": "I don't know. I don't have eyes.",
-    "favourite color": "I don't know. I don't have eyes.",
+    "will ": "I'm a robot, not a fortune-teller.", 
+    " favorite color": "I don't know. I don't have eyes.",
+    " favourite color": "I don't know. I don't have eyes.",
     "you want": "what does it mean to want something?",
     "wanna": "no, not really.",
     "not": "why not?",
@@ -198,6 +203,10 @@ client.on("ready", () => {
 });
 
 client.on("message", msg => {
+    /* umožní vypnout bota */
+    if(msg.content==="!wakeup") botOn = true;
+    else if(!botOn) return true;
+
     /* zkontroje jestli lidi na serveru nejsou kreténi... */
     if(checkIfMessageIsPC(msg)) return true;
 
@@ -208,6 +217,8 @@ client.on("message", msg => {
     } else {
         /* reakce na všechny zprávy, bez předchozího vyvolání */
         switch(msg.content) {
+            case "!sleep": botOn = false;
+            break;
             case "ping": if(Math.random() >= 0.5) msg.reply("pong");
             else msg.reply("no");
             break;
@@ -335,6 +346,18 @@ function chainSwearwordsCheck(msg) {
 /* pro triggery, které použít něco jiného než === (equals)  */
 function userActivatedChatbot_IndirectPhrases(msg) {
     let replied = false;
+
+    if(!replied) {
+        /* triggery, která jsou na začátku zprávy */
+        for(var propt in messagesStartsWithAnswers) {
+            if(msg.content.toLowerCase().startsWith(propt)) {
+                msg.reply(messagesStartsWithAnswers[propt]);
+                replied = true;
+                break;
+            }
+        }
+    }
+    
     /* triggery, kterých je více, nacházejí se kdekoliv a mají více odpověďí */
     for(i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
         for(j = 0; j < phrasesWithMultipleAnswers_Triggers[i].length; j++) {
@@ -357,17 +380,6 @@ function userActivatedChatbot_IndirectPhrases(msg) {
         for(var propt in messagesIncludesAnswers) {
             if(msg.content.toLowerCase().includes(propt)) {
                 msg.reply(messagesIncludesAnswers[propt]);
-                replied = true;
-                break;
-            }
-        }
-    }
-
-    if(!replied) {
-        /* triggery, která jsou na začátku zprávy */
-        for(var propt in messagesStartsWithAnswers) {
-            if(msg.content.toLowerCase().startsWith(propt)) {
-                msg.reply(messagesStartsWithAnswers[propt]);
                 replied = true;
                 break;
             }
