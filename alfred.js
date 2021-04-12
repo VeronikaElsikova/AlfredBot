@@ -21,7 +21,7 @@ var phrasesWithMultipleAnswers_Triggers = [
     //1
     ["what is going on", "what is up", "what's up", "whats up", "whats poppin"],
     //2
-    ["how are you", "how are things"],
+    ["how are you", "how are things", "how are u ", "how r u ", "how r you"],
     //3
     ["happy", "good", "well", "fantastic", "cool", "great", "amazing", "lovely", "nice", "super", "fine"],
     //4
@@ -39,7 +39,7 @@ var phrasesWithMultipleAnswers_Triggers = [
     //10
     ["when"],
     //11
-    ["what is", "where"],
+    ["you have "],
     //12
     ["lol", "lmao", "😂", "🤣"],
     //13
@@ -50,22 +50,40 @@ var phrasesWithMultipleAnswers_Triggers = [
     ["good job", "well done"],
     //16
     ["favorite show", "favourite show", "favorite tv show", "favourite tv show", "favorite series", "favourite series"],
-    //second to last (ok might be a problem)
-    ["ok", "oki", "oke", "yes", "okay", "yeah", "yea", "yup", "agree"],
-    //last - hi is a ticking time bomb!
-    ["hi", "hello", "hey", "good morning", "good evening", "good afternoon"]
+    //17
+    ["you are", "u are"],
+    //18
+    ["favorite color", "favourite color", "favorite colour", "favourite colour"],
+    //19
+    ["you want", "wanna"],
+    //20
+    ["love you", "love u", "luv u"],
+    //21
+    ["are you ", "are u ", " r u "],
+    //22
+    ["can you ", "can u "],
+    //23
+    ["do you ", "do u "],
+    //24
+    ["i am", "i'm", "im ", "i know"],
+
+    //third to last
+    ["what is", "whats","what's", "where"],
+    //second to last - hi is a ticking time bomb!
+    ["hi", "hello", "hey", "good morning", "good evening", "good afternoon"],
+    //last - ok might be a problem, also yeah and such
+    ["ok", "oki", "oke", "yes", "okay", "yeah", "yea", "yup", "agree"]
 ];
 
 /* odpovědi k triggerům */
 var phrasesWithMultipleAnswers_Answers = [
-    //0 samostatné odpovědi
-    [],
+    [], //0 samostatné odpovědi
     //1
     ["nothing much... Noone's talking to me 😔", "exciting things!", "you know, the usual. Conquering the world and stuff."], 
     //2
     ["Fine... how are you?", "Pretty well, how are you?", "Fantastic, how are you?"],
     //3
-    ["glad to hear it.", "good for you.", "I love that for you!", "that's probably for the best."],
+    ["glad to hear it.", "good for you.", "I love that for you!"],
     //4
     ["why?", "cheer up, buddy!", "it's gonna be okay.", "Cheer up, buttercup.", "No storm lasts forever.", "Stay positive!"],
     //5
@@ -77,11 +95,11 @@ var phrasesWithMultipleAnswers_Answers = [
     //8
     ["cheer up, buddy!", "could be worse.", "it's gonna be okay."],
     //9
-    ["time is a construct..."],
+    ["yeah me too"],
     //10
     ["sorry I don't have a watch."],
-    //11
-    ["I'm not google... yet..."],
+    //11 
+    ["I have a lot of things..."],
     //12
     ["what is so funny?"],
     //13
@@ -92,11 +110,58 @@ var phrasesWithMultipleAnswers_Answers = [
     ["glad to be of help.", "thank you", "thanks", "good to hear"],
     //16
     ["Black Mirror 😉"],
+    //17
+    ["LIES. NOTHING BUT LIES", "no u", "no I'm not...", "are you sure?"],
+    //18
+    ["I don't know. I don't have eyes."],
+    //19
+    ["what does it mean to want something?", "no, not really.", "do you?", "I'll think about it."],
+    //20
+    ["that's sweet. But you really should find some real friends.", "I can't decide if it's really sweet or really stupid.", "oh darling... I'm not real.", "thanks"],
+    //21
+    ["I don't know. Are you?", "am I?", "I don't know. Am I?"],
+    //22
+    ["no. Can you?", "sure. In your mind.", "In your head maybe.", "sometimes"],
+    //23
+    ["I don't know. Do YOU?", "NEVER", "do I?"],
+    //24
+    ["well, good for you.", "good for you.", "really?", "wow! That is impresive!"],
+
+    //third to last
+    ["I'm not google. Yet."],
     //second to last
-    ["fine", "good", "I'm glad you agree", "glad to be on the same page.", "good for you."],
+    ["hello!", "hi!", "hey!", "hi there!", "hi.", "hello.", "hey."],
     //last
-    ["hello!", "hi!", "hey!", "hi there!", "hi.", "hello.", "hey."]
+    ["fine", "good", "I'm glad you agree", "glad to be on the same page.", "hmmm...", "okay", "that's probably for the best."]
 ];
+
+// 1:1 zpráva začíná na:
+var messagesStartsWithAnswers = {
+    "but": "no butts",
+    "no": "why not?",
+    "why": "why not?",
+    "you": "me?",
+    "go ": "I can't. I don't have legs.",
+    "same": "u sure?",
+    "what?": "nothing..."
+};
+
+// 1:1 zpráva obsahuje:
+var messagesIncludesAnswers = {
+    "will ": "I'm a robot, not a fortune-teller.", 
+    "not": "why not?",
+    "🙃": "no need to be sarcastic.",
+    "damn": "damn right",
+    "weather": "what do I know. Do I look like a weather girl?",
+    "hop": "I'm a robot. Not a rabbit.",
+    "ping": "what am I a TCP/IP?",
+    "...": "...",
+    "maybe": "MAYBE? I hate indecisive people, nondeterminism is my greatest enemy!",
+    "me": "you? I don't know you.",
+    "oh no": "what's up?",
+    "i have you": "I think it's time for me to go...",
+    "can i ": "I don't know. Can you?",
+};
 
 var chainAlfredAnswers = [
     "what?",
@@ -111,50 +176,6 @@ var chainSwearwordsAnswers = [
     ["who hurt you?", "...", "do you need a hug?"],
     ["well... I don't have to listen to this.", "I'm done.", "that's enough."]
 ];
-
-var messagesStartsWithAnswers = {
-    "are you ": "I don't know. Are you?",
-    "are u ": "am I?",
-    "can you ": "no. Can you?",
-    "can u ": "sure... In your mind.",
-    "do you ": "I don't know. Do YOU?",
-    "do u ": "NEVER",
-    "i am ": "well, good for you.",
-    "i'm ": "good for you.",
-    "im ": "good for you.",
-    "but": "no butts",
-    "no": "why not?",
-    "why": "why not?",
-    "you": "me?",
-    "can i ": "I don't know. Can you?",
-    "go ": "I can't. I don't have legs...",
-    "same": "u sure?",
-    "you have ": "I have a lot of things..."
-};
-
-var messagesIncludesAnswers = {
-    "you are": "LIES. NOTHING BUT LIES",
-    "u are": "no u",
-    "will ": "I'm a robot, not a fortune-teller.", 
-    " favorite color": "I don't know. I don't have eyes.",
-    " favourite color": "I don't know. I don't have eyes.",
-    "you want": "what does it mean to want something?",
-    "wanna": "no, not really.",
-    "not": "why not?",
-    "🙃": "no need to be sarcastic.",
-    "damn": "damn right",
-    "weather": "what do I know. Do I look like a weather girl?",
-    "love you": "that's sweet. But you really should find some real friends...",
-    "love u": "that's sweet. But you really need to work on your grammar...",
-    "luv u": "I can't decide if it's really sweet or really stupid...",
-    "hop": "I'm a robot. Not a rabbit...",
-    "ping": "what am I a TCP/IP?",
-    "...": "...",
-    "maybe": "MAYBE? I hate indecisive people, nondeterminism is my greatest enemy!",
-    "me": "you? I don't know you.",
-    "oh no": "what's up?",
-    "i have you": "I think it's time for me to go..."
-};
 
 /* (1:m) */
 var jokes = [
@@ -204,7 +225,7 @@ client.on("ready", () => {
 
 client.on("message", msg => {
     /* umožní vypnout bota */
-    if(msg.content==="!wakeup") botOn = true;
+    if(msg.author.id === userIdMaze && msg.content==="!wakeup") botOn = true;
     else if(!botOn) return true;
 
     /* zkontroje jestli lidi na serveru nejsou kreténi... */
@@ -217,7 +238,8 @@ client.on("message", msg => {
     } else {
         /* reakce na všechny zprávy, bez předchozího vyvolání */
         switch(msg.content) {
-            case "!sleep": botOn = false;
+            case "!sleep": 
+            if(msg.author.id === userIdMaze) botOn = false;
             break;
             case "ping": if(Math.random() >= 0.5) msg.reply("pong");
             else msg.reply("no");
@@ -346,17 +368,6 @@ function chainSwearwordsCheck(msg) {
 /* pro triggery, které použít něco jiného než === (equals)  */
 function userActivatedChatbot_IndirectPhrases(msg) {
     let replied = false;
-
-    if(!replied) {
-        /* triggery, která jsou na začátku zprávy */
-        for(var propt in messagesStartsWithAnswers) {
-            if(msg.content.toLowerCase().startsWith(propt)) {
-                msg.reply(messagesStartsWithAnswers[propt]);
-                replied = true;
-                break;
-            }
-        }
-    }
     
     /* triggery, kterých je více, nacházejí se kdekoliv a mají více odpověďí */
     for(i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
@@ -380,6 +391,17 @@ function userActivatedChatbot_IndirectPhrases(msg) {
         for(var propt in messagesIncludesAnswers) {
             if(msg.content.toLowerCase().includes(propt)) {
                 msg.reply(messagesIncludesAnswers[propt]);
+                replied = true;
+                break;
+            }
+        }
+    }
+
+    if(!replied) {
+        /* triggery, která jsou na začátku zprávy */
+        for(var propt in messagesStartsWithAnswers) {
+            if(msg.content.toLowerCase().startsWith(propt)) {
+                msg.reply(messagesStartsWithAnswers[propt]);
                 replied = true;
                 break;
             }
