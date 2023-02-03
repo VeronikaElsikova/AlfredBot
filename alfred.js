@@ -1,9 +1,16 @@
 const Discord = require("discord.js");
 const config = require("dotenv").config()
 
-const client = new Discord.Client();
+const client = new Discord.Client({
+    ws: {
+      intents: [Discord.Intents.ALL, 1 << 15]
+    }
+  })
+  
 const userIdMaze = "619568015310192663";
-const channelIsLogs = "830014187550933022";
+const userIdAlfred = "828988023789191229";
+const channelIdLogs = "830014187550933022";
+const channelIdArcade = "831249334619471874";
 var botOn = true;
 var userId = null;
 var chainAlfred = 0;
@@ -68,7 +75,7 @@ var phrasesWithMultipleAnswers_Triggers = [
     ["i am", "i'm", "im ", "i know"],
 
     //third to last
-    ["what is", "whats","what's", "where"],
+    ["what is", "whats", "what's", "where"],
     //second to last - hi is a ticking time bomb!
     ["hi", "hello", "hey", "good morning", "good evening", "good afternoon"],
     //last - ok might be a problem, also yeah and such
@@ -79,7 +86,7 @@ var phrasesWithMultipleAnswers_Triggers = [
 var phrasesWithMultipleAnswers_Answers = [
     [], //0 samostatné odpovědi
     //1
-    ["nothing much... Noone's talking to me 😔", "exciting things!", "you know, the usual. Conquering the world and stuff."], 
+    ["nothing much... Noone's talking to me 😔", "exciting things!", "you know, the usual. Conquering the world and stuff."],
     //2
     ["Fine... how are you?", "Pretty well, how are you?", "Fantastic, how are you?"],
     //3
@@ -148,7 +155,7 @@ var messagesStartsWithAnswers = {
 
 // 1:1 zpráva obsahuje:
 var messagesIncludesAnswers = {
-    "will ": "I'm a robot, not a fortune-teller.", 
+    "will ": "I'm a robot, not a fortune-teller.",
     "not": "why not?",
     "🙃": "no need to be sarcastic.",
     "damn": "damn right",
@@ -220,45 +227,51 @@ function getRandomInt(min, max) {
 }
 
 client.on("ready", () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`Logged in as ${client.user.tag}!`);
+    client.channels.cache.get(channelIdLogs).send("Hello world");
 });
 
 client.on("message", msg => {
     /* umožní vypnout bota */
-    if(msg.author.id === userIdMaze && msg.content==="!wakeup") botOn = true;
-    else if(!botOn) return true;
+    if (msg.author.id === userIdMaze && msg.content === "!wakeup") botOn = true;
+    else if (!botOn) return true;
 
     /* zkontroje jestli lidi na serveru nejsou kreténi... */
-    if(checkIfMessageIsPC(msg)) return true;
+    if (checkIfMessageIsPC(msg)) return true;
 
-    if(msg.author.id === userId) {
+    /* pokud zpráva přichází z kanálu ARCADE */
+    if (msg.channel.id === channelIdArcade) {
+        arcadeCommands(msg);
+        return true;
+    }
+
+    /* TODO sem přijdou všechny příkazy */
+    if (msg.content.startsWith("!poll")) {
+        makePoll(msg);
+    }
+
+    if (msg.author.id === userId) {
         /* uživatel aktivoval chatbota */
-        if(pause>0) chatBotPausedCheck(msg);
+        if (pause > 0) chatBotPausedCheck(msg);
         else userActivatedChatbot_Replies(msg);
     } else {
         /* reakce na všechny zprávy, bez předchozího vyvolání */
-        switch(msg.content) {
-            case "!sleep": 
-            if(msg.author.id === userIdMaze) botOn = false;
-            break;
-            case "ping": if(Math.random() >= 0.5) msg.reply("pong");
+        switch (msg.content) {
+            case "!sleep":
+                if (msg.author.id === userIdMaze) botOn = false;
+                break;
+            case "ping": if (Math.random() >= 0.5) msg.reply("pong");
             else msg.reply("no");
-            break;
+                break;
             case "Alfred?": initializeChatbot(msg)
-            msg.reply("Yes?");
-            break;
+                msg.reply("Yes?");
+                break;
             case "alfred?": initializeChatbot(msg)
-            msg.reply("Yes?");
-            break;
+                msg.reply("Yes?");
+                break;
             case "ALFRED?": initializeChatbot(msg)
-            msg.reply("YES?");
-            break;
-            default: {
-            /* TODO sem přijdou všechny příkazy */
-            if(msg.content.startsWith("!poll")) {
-                makePoll(msg);
-            }
-            }
+                msg.reply("YES?");
+                break;
         }
     }
 });
@@ -274,28 +287,28 @@ function initializeChatbot(msg) {
 /* funkce, která se volá pokud uživatel aktivoval chatbota (napsání "Alfred?") */
 function userActivatedChatbot_Replies(msg) {
     /* pokud je zpráva VELKÝMI PÍSMENY */
-    if(msg.content.toUpperCase() === msg.content && /[a-z]/i.test(msg.content)) {
+    if (msg.content.toUpperCase() === msg.content && /[a-z]/i.test(msg.content)) {
         msg.reply("WHY ARE WE YELLING?!");
     }
-    else { 
-        switch(msg.content.toLowerCase()) {
+    else {
+        switch (msg.content.toLowerCase()) {
             case "tell me a joke":
-            // TODO upravit, aby čekal na odpověď
-            if(chainAlfred > 3) msg.reply("\nJack: Why was the robot angry?\nBen: Beats me.\nJack: Because someone kept pushing his buttons!");
-            else msg.reply(jokes[getRandomInt(0, jokes.length-1)]);
-            break;
+                // TODO upravit, aby čekal na odpověď
+                if (chainAlfred > 3) msg.reply("\nJack: Why was the robot angry?\nBen: Beats me.\nJack: Because someone kept pushing his buttons!");
+                else msg.reply(jokes[getRandomInt(0, jokes.length - 1)]);
+                break;
             case "goodbye": msg.reply("farewell. Have a nice day.");
-            resetChatBot();
-            break;
+                resetChatBot();
+                break;
             case "alfred?": chainAlfred++;
-            // pokud uživatel opakuje "Alfred?" po aktivaci chatbota
-            chainAlfredCheck(msg);
-            break;
+                // pokud uživatel opakuje "Alfred?" po aktivaci chatbota
+                chainAlfredCheck(msg);
+                break;
             default: {
                 /* pokud je třeba na obsah zprávy použít něco jiného než === (equals) */
                 userActivatedChatbot_IndirectPhrases(msg);
-            } 
-        }  
+            }
+        }
     }
 }
 
@@ -310,14 +323,14 @@ function resetChatBot() {
 
 /* zkontroluje, že se nepoužívají "zakázaná" slova */
 function checkIfMessageIsPC(msg) {
-    if(msg.channel.id===channelIsLogs) return false;
-    for(j = 0; j < bannedWords.length; j++) {
-        if(msg.content.toLowerCase().includes(bannedWords[j])) {
-            client.channels.cache.get(channelIsLogs).send("<@" + msg.author.id + "> send a message to channel \"" + msg.channel.name + "\": \"" + msg.content + "\"");
+    if (msg.channel.id === channelIdLogs) return false;
+    for (j = 0; j < bannedWords.length; j++) {
+        if (msg.content.toLowerCase().includes(bannedWords[j])) {
+            client.channels.cache.get(channelIdLogs).send("<@" + msg.author.id + "> send a message to channel \"" + msg.channel.name + "\": \"" + msg.content + "\"");
             msg.reply("your message has been deleted, because it contains one or multiple words that are banned on this server.");
             msg.delete();
             msg.channel.send("<@" + userIdMaze + ">, I require assistance. <@" + msg.author.id + "> is being a dickhead...");
-            if(msg.author===userId) {
+            if (msg.author === userId) {
                 resetChatBot();
             }
             return true;
@@ -328,9 +341,9 @@ function checkIfMessageIsPC(msg) {
 
 function chatBotPausedCheck(msg) {
     var text = msg.content.toLowerCase();
-    switch(pause) {
+    switch (pause) {
         case 1:
-            if(text.includes("sorry") && !text.includes("not sorry") || text.includes("i apologize")) {
+            if (text.includes("sorry") && !text.includes("not sorry") || text.includes("i apologize")) {
                 pause = 0;
                 msg.reply("I forgive you.");
             }
@@ -341,12 +354,12 @@ function chatBotPausedCheck(msg) {
 
 /* pokud uživatel opakuje "Alfred?" po aktivaci chatbota tak vezme příslušný string a pošle ho */
 function chainAlfredCheck(msg) {
-    if(chainAlfred > 1) {
+    if (chainAlfred > 1) {
         let index = chainAlfred - 2;
-        if(index < chainAlfredAnswers.length) {
+        if (index < chainAlfredAnswers.length) {
             msg.reply(chainAlfredAnswers[index]);
         }
-        if(chainAlfred > chainAlfredAnswers.length) {
+        if (chainAlfred > chainAlfredAnswers.length) {
             resetChatBot();
         }
     }
@@ -354,12 +367,12 @@ function chainAlfredCheck(msg) {
 
 /* pokud uživatel píše nadávky po aktivaci chatbota */
 function chainSwearwordsCheck(msg) {
-    if(chainSwearwords > 0) {
+    if (chainSwearwords > 0) {
         let index = chainSwearwords - 1;
-        if(index < chainSwearwordsAnswers.length) {
-            msg.reply(chainSwearwordsAnswers[index][getRandomInt(0, chainSwearwordsAnswers[index].length-1)]);
+        if (index < chainSwearwordsAnswers.length) {
+            msg.reply(chainSwearwordsAnswers[index][getRandomInt(0, chainSwearwordsAnswers[index].length - 1)]);
         }
-        if(index > chainSwearwordsAnswers.length-2) {
+        if (index > chainSwearwordsAnswers.length - 2) {
             pause = 1;
         }
     }
@@ -368,28 +381,28 @@ function chainSwearwordsCheck(msg) {
 /* pro triggery, které použít něco jiného než === (equals)  */
 function userActivatedChatbot_IndirectPhrases(msg) {
     let replied = false;
-    
+
     /* triggery, kterých je více, nacházejí se kdekoliv a mají více odpověďí */
-    for(i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
-        for(j = 0; j < phrasesWithMultipleAnswers_Triggers[i].length; j++) {
-            if(msg.content.toLowerCase().includes(phrasesWithMultipleAnswers_Triggers[i][j])) {
-                if(i===0) {
+    for (i = 0; i < phrasesWithMultipleAnswers_Triggers.length; i++) {
+        for (j = 0; j < phrasesWithMultipleAnswers_Triggers[i].length; j++) {
+            if (msg.content.toLowerCase().includes(phrasesWithMultipleAnswers_Triggers[i][j])) {
+                if (i === 0) {
                     chainSwearwords++;
                     chainSwearwordsCheck(msg);
                 } else {
-                    msg.reply(phrasesWithMultipleAnswers_Answers[i][getRandomInt(0, phrasesWithMultipleAnswers_Answers[i].length-1)]);
+                    msg.reply(phrasesWithMultipleAnswers_Answers[i][getRandomInt(0, phrasesWithMultipleAnswers_Answers[i].length - 1)]);
                 }
                 replied = true;
                 break;
             }
         }
-        if(replied) break;
+        if (replied) break;
     }
-    
-    if(!replied) {
+
+    if (!replied) {
         /* triggery, které se nacházejí kdekoliv ve zprávě a mají pouze jednu odpověď */
-        for(var propt in messagesIncludesAnswers) {
-            if(msg.content.toLowerCase().includes(propt)) {
+        for (var propt in messagesIncludesAnswers) {
+            if (msg.content.toLowerCase().includes(propt)) {
                 msg.reply(messagesIncludesAnswers[propt]);
                 replied = true;
                 break;
@@ -397,18 +410,18 @@ function userActivatedChatbot_IndirectPhrases(msg) {
         }
     }
 
-    if(!replied) {
+    if (!replied) {
         /* triggery, která jsou na začátku zprávy */
-        for(var propt in messagesStartsWithAnswers) {
-            if(msg.content.toLowerCase().startsWith(propt)) {
+        for (var propt in messagesStartsWithAnswers) {
+            if (msg.content.toLowerCase().startsWith(propt)) {
                 msg.reply(messagesStartsWithAnswers[propt]);
                 replied = true;
                 break;
             }
         }
     }
-   
-    if(!replied) {
+
+    if (!replied) {
         msg.react("🤷");
     }
 }
@@ -422,41 +435,82 @@ function makePoll(msg) {
     var formatString = msg.content;
     var instructions = msg.content.split(" \"");
     try {
-        var pollEmbed = new Discord.MessageEmbed().setColor('#0099ff').setTitle(instructions[1].slice(0,-1)+"\n");
+        var pollEmbed = new Discord.MessageEmbed().setColor('#0099ff').setTitle(instructions[1].slice(0, -1) + "\n");
         var type = instructions[0].split(" ")[1];
         instructions.shift();
         instructions.shift();
         var description = ""
         var count = instructions.length;
-        for(i = 0; i < instructions.length; i++) {
-            switch(type) {
-                case "-N": instructions[i] = reactEmojiN[i] + separator + instructions[i].slice(0,-1) + "\n";
-                break;
-                case "-C": instructions[i] = reactEmojiC[i] + separator + instructions[i].slice(0,-1) + "\n";
-                break;
-                case "-S": instructions[i] = reactEmojiS[i] + separator + instructions[i].slice(0,-1) + "\n";
-                break;
+        for (i = 0; i < instructions.length; i++) {
+            switch (type) {
+                case "-N": instructions[i] = reactEmojiN[i] + separator + instructions[i].slice(0, -1) + "\n";
+                    break;
+                case "-C": instructions[i] = reactEmojiC[i] + separator + instructions[i].slice(0, -1) + "\n";
+                    break;
+                case "-S": instructions[i] = reactEmojiS[i] + separator + instructions[i].slice(0, -1) + "\n";
+                    break;
                 default: throw "wrong type";
             }
         }
         pollEmbed.setDescription(instructions.join("\n"));
-        msg.channel.send({embed: pollEmbed}).then(embedMessage => {
-            for(j = 0; j < count; j++) {
-                switch(type) {
+        msg.channel.send({ embed: pollEmbed }).then(embedMessage => {
+            for (j = 0; j < count; j++) {
+                switch (type) {
                     case "-N": embedMessage.react(reactEmojiN[j]);
-                    break;
+                        break;
                     case "-C": embedMessage.react(reactEmojiC[j]);
-                    break;
+                        break;
                     case "-S": embedMessage.react(reactEmojiS[j]);
-                    break;
+                        break;
                     default: throw "wrong type";
                 }
             }
-        });   
-    } catch(err) {
+        });
+    } catch (err) {
         console.log(err);
-        if(err==="wrong type") msg.reply("This !poll flag is not supported.");
+        if (err === "wrong type") msg.reply("This !poll flag is not supported.");
         else msg.reply("Wrong !poll format. Please try again. !poll should look like this: !poll -N Title choice1 choice2\nYou can add up to 9 choices!");
     }
 
+}
+
+var playerOneTTT = null;
+var playerTwoTTT = null;
+var playerOneTurn = true; // určuje kdo je na tahu (true = hráč číslo jedno, false = hráč číslo dva)
+var rows = 5;
+var columns = 5;
+
+function arcadeCommands(msg) {
+    if (msg.content.toLowerCase().startsWith("!xo")) {
+        initializeTicTacToe(msg);
+    }
+}
+
+function initializeTicTacToe(msg) {
+    var pollEmbed = new Discord.MessageEmbed().setColor('#66ff66').setTitle("Tic Tac Toe");
+    try {
+        var format = msg.content.split(" "); //0-!xo, 1-@secondplayer(může být i bot TODO), 2-rozměry ve formátu 1x2 (nepovinné - defaultně 5x5)
+        var intRegex = /^\d+$/;
+        if (format[2] !== undefined) {
+            var dimensions = format[2].split("x");
+            if (intRegex.test(dimensions[0]) && dimensions[0] < 31 && dimensions[0] > 4) rows = dimensions[0];
+            if (intRegex.test(dimensions[1]) && dimensions[1] < 31 && dimensions[1] > 4) columns = dimensions[1];
+        }
+        playerOneTTT = msg.author.id;
+        playerTwoTTT = msg.mentions.users.first().id;
+        //if(playerTwoTTT === playerOneTTT) TODO
+        //if(playerTwoTTT === userIdAlfred) TODO
+    } catch (err) {
+        console.log(err);
+        msg.reply("Wrong !xo format. Please try again. !xo should look like this: !xo @opponent 5x5.\nDimensions are optional and have to in range from 5 to 30.\nIf you don't have an opponent, you can tag Alfred and you'll be playing against the bot.");
+    }
+
+}
+
+function resetTicTacToe() {
+    var playerOneTTT = null;
+    var playerTwoTTT = null;
+    var playerOneTurn = true;
+    var rows = 5;
+    var columns = 5;
 }
